@@ -7,7 +7,7 @@ import config
 app = Flask(__name__)
 Bootstrap(app)
 
-app.secret_key = "hello"
+app.secret_key = config.secret_key
 
 app.config.update(dict(
     MAIL_SERVER = 'smtp.googlemail.com',
