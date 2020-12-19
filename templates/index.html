@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>{% block title %}{% endblock %}</title>
+
+</head>
+<body>
+{% block content %}
+
+{% block navbar %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">hops.pythonanywhere.com</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+
+    <li class="nav-item active">
+      <a class="nav-link" href="{{ url_for('calculate', page='calculate_ibu', calc=False, ibu=0) }}">IBU Calculator<span class="sr-only">(current)</span></a>
+    </li>
+
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Explore Hops
+      </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{{ url_for('hops_explorer_name', page='display_hops_table', data_type='Name') }}">Hops list (alphabetical)</a>
+          <a class="dropdown-item" href="{{ url_for('hops_explorer_alpha_ascending', page='display_hops_table', data_type='alpha_ascending') }}">Alpha % (increasing)</a>
+          <a class="dropdown-item" href="{{ url_for('hops_explorer_alpha_descending', page='display_hops_table', data_type='alpha_descending') }}">Alpha % (decreasing)</a>
+          <a class="dropdown-item" href="{{ url_for('hops_explorer_beta_ascending', page='display_hops_table', data_type='beta_ascending') }}">Beta % (increasing)</a>
+          <a class="dropdown-item" href="{{ url_for('hops_explorer_beta_descending', page='display_hops_table', data_type='beta_descending') }}">Beta % (decreasing)</a>
+
+        </div>
+      </li>
+
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Explore Beer Styles Database
+      </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{{ url_for('beer_styles_data', page='beer_styles', data_type='name') }}">Complete List (alphabetical)</a>
+
+        </div>
+      </li>
+
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('sources_methods', page='sources_methods') }}">Sources<span class="sr-only">(current)</span></a>
+      </li>
+
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('contact', page='contact') }}">Contact<span class="sr-only">(current)</span></a>
+      </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+{% endblock %}
+
+{% if page == "calculate_ibu" %}
+
+
+<div class="container">
+    <br>
+    <h1>IBU Calculator</h1>
+
+    <form class="needs-validation" >
+
+      <div class="form-group">
+        <label for="hops_amount">Hops Amount</label>
+        <input type="number" step=.01 name="hops_amount" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Hops amount (oz)" value="{{hops_amount if hops_amount}}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="alpha_percent">Alpha acid %</label>
+        <input type="number" step=.01 name="alpha_percent" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ex: For 7.5% enter 7.5" value="{{alpha_percent if alpha_percent}}"required>
+      </div>
+
+      <div class="form-group">
+        <label for="boiling_time">Boiling Time</label>
+        <input type="number" step=.01 name="boiling_time" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter the boiling time (min)" value="{{boiling_time if boiling_time}}" required>
+      </div>
+
+
+
+      <button type="submit" class="btn btn-primary" name="calculate_button" formmethod="post" value="True">Calculate</button>
+
+    </form>
+
+
+
+
+    {% if calc == True %}
+    <br>
+    <p>IBU: {{ ibu }}</p>
+
+</div>
+
+    {% endif %}
+
+{% endif %}
+
+{% if page == "display_hops_table" %}
+
+    <table class="table table-dark">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Alpha %</th>
+      <th scope="col">Beta %</th>
+      <th scope="col">Styles</th>
+      <th scope="col">Info</th>
+      <th scope="col">Trade</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for index, row in data.iterrows() %}
+    <tr>
+      <td>{{ row["Name"] }}</td>
+      <td>{{ row["AlphaAvg"] }}</td>
+      <td>{{ row["BetaAvg"] }}</td>
+      <td>{{ row["Styles"] }}</td>
+      <td>{{ row["Info"] }}</td>
+      <td>{{ row["Trade"] }}</td>
+    </tr>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+
+{% endif %}
+
+{% if page == "beer_styles" %}
+<br>
+<h1>Beer Styles</h1>
+<br>
+
+<form>
+<div class="btn-group">
+  <button class="btn btn-secondary btn-lg" type="button">
+    Select Columns to Display
+  </button>
+  <button type="button" class="btn btn-lg btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <div class="dropdown-menu">
+    {% for col in col_options %}
+    <div class="dropdown-item">
+    <div class="checkbox">
+    <label><input type="checkbox" name="{{ col }}" value="{{ col }}"> {{ col_headers[col] }}</label>
+    </div>
+    </div>
+    {% endfor %}
+
+    <div class="dropdown-divider"></div>
+
+    <button type="submit" class="dropdown-item" formmethod="post" value="True">Go</button>
+
+    </div>
+</form>
+
+  </div>
+</div>
+<br>
+<br>
+<table class="table table-dark">
+<thead>
+<tr>
+  {% for col in col_list %}
+    <th scope="col">{{ col_headers[col] }}</th>
+  {% endfor %}
+
+</tr>
+</thead>
+<tbody>
+
+{% for index, row in data.iterrows() %}
+<tr>
+  {% for col in col_list %}
+    <td>{{ row[col] }}</td>
+  {% endfor %}
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endif %}
+
+{% if page == "sources_methods" %}
+
+<div class="container">
+<br>
+<h1>Sources and Methods</h1>
+<br>
+<p>Both the beer styles data and the hops data sets came from github repositories.
+   The <a href="https://github.com/stuartraetaylor/hops-json">hops data set</a> was
+   parsed from a json file based on the BrewDB database from Samir Boulema.
+   The <a href="https://github.com/meanphil/bjcp-guidelines-2015/blob/master/styleguide.xml">beer styles data</a> was parsed
+   from a xml file based on the <a href="https://www.bjcp.org/stylecenter.php">2015 Beer Judge Certification Program (BJCP)</a>
+   Styles Guidelines.
+</p>
+<br>
+<h1>About the Statistics</h1>
+<br>
+<p>
+  All of the statistics presented (alpha acid, aeta acid, og, fg, ibu, srm, abv) are
+  only the average of the high and low values presented in the data sets.  This was
+  done to avoid presenting too much information, but there is typically a range of
+  accepted values.
+</p>
+</div>
+{% endif %}
+
+{% if page == "contact" %}
+
+
+<div class="container">
+    <br>
+    <h1>Contact</h1>
+
+    <form class="needs-validation" >
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea class="form-control" name="message" id="exampleFormControlTextarea1" rows="3" required></textarea>
+      </div>
+
+
+      <button type="submit" class="btn btn-primary" name="send_email_button" formmethod="post" value="True">Send</button>
+
+    </form>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
